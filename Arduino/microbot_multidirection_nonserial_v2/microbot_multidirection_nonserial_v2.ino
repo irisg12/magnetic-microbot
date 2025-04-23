@@ -1,14 +1,25 @@
-// Looping test of all directions
-// Commands sent directly to stepper drivers
+// Arduino only looping test of all 8 directions 
+// Commands sent directly to drivers, no MATLAB serial comm
+// v2 allows for easy changes to command order and counts for each direction
+// pauses in between direction changes are automatically added
 
-#define UDStepPin 2     // orange
-#define UDDirPin 3      // yellow
-#define UDEnablePin 4   // white
-#define LRStepPin 9     // orange
-#define LRDirPin 10     // yellow
-#define LREnablePin 11  // white
-#define speed 30 //higher speed means a lower ACTUAL speed of the motor default 20000
-// LR is ROYB color jumpers, UD is BWGP
+// Vertical and horizontal movement represented by the four cardinal directions NSEW
+// diagonal movements: A is northwest, B is northeast, C is southeast, D is southwest
+// X represents default case (no movement) 
+// F represents full command set completion (relevant for MATLAB serial comm)
+
+/* Setup */
+// 1x8 header pins should be at the top right of the PCB board
+// see Github schematic: pins 1-4 control U/D movement, pins 5-8 control L/R movement
+
+#define UDStepPin 2     // pin to control up/down step timing
+#define UDDirPin 3      // direction indicator: N = LOW, S = HIGH
+#define UDEnablePin 4   // active low enable
+
+#define LRStepPin 9     // pin to control left/right step timing
+#define LRDirPin 10     // direction indicator: E = LOW, W = HIGH
+#define LREnablePin 11  // active low enable
+#define speed 30        // milliseconds between each L-H or H-L transition
 
 void setup() {
   pinMode(UDStepPin, OUTPUT);
@@ -21,26 +32,29 @@ void setup() {
 
 void loop() 
 {
-  int mult = 2;
-  int num = 9;
+  int mult = 2; // # of sets of 10 steps each direction repeats for
+  int num = 9;  // number of commands, length of char array commands
   
   int n = 10 * mult;
   int s = 10 * mult;
   int e = 10 * mult;
   int w = 10 * mult;
-  int a = 10 * mult; // A is northwest
-  int b = 10 * mult; // B is northeast
-  int c = 10 * mult; // C is southeast
-  int d = 10 * mult; // D is southwest
-  int x = 3 * mult;  // X is a pause/no movement
-  int f = 1;         // F is terminating character for serial com
-  int length = n+s+e+w+a+b+c+d+f+x*9;
-  char commands[num] =   {'N', 'E', 'S', 'W', 'A', 'B', 'C', 'D', 'F'};
+  int a = 10 * mult; 
+  int b = 10 * mult; 
+  int c = 10 * mult; 
+  int d = 10 * mult; 
+  int x = 3 * mult;  // 3 step pause between direction changes
+  int f = 1;         // terminating character
+  int length = n+s+e+w+a+b+c+d+f+x*num; // total command set length
+
+  // directions to execute in order
+  char commands[num] =   {'N', 'E', 'S', 'W', 'A', 'B', 'C', 'D', 'F'}; 
+  // number of repetitions per character
   int commandcounts[num] = {n, e, s, w, a, b, c, d, f};
   char dir[length];
 
   int totalchars = 0;
-  // populating the char array dir
+  // populating the char array dir with all commands separated by pauses
   for (int i = 0; i < num; i++) {
     for (int j = 0; j < commandcounts[i]; j++) {
       dir[totalchars++] = commands[i];
@@ -50,9 +64,8 @@ void loop()
     }
   }
   
-  char direction;
+  char direction; // current direction
   for (int i = 0; i < length; i++) {
-    for(int j = 0; j < 1; j++) {
     direction = dir[i];
     digitalWrite(UDEnablePin, LOW);
     digitalWrite(LREnablePin, LOW);
@@ -99,11 +112,10 @@ void loop()
     }
     digitalWrite(UDStepPin, HIGH);
     digitalWrite(LRStepPin, HIGH);
-    delay(speed); //speed of a single step.  At high speeds the motion can get very rough.  Consider making speed slower
+    delay(speed); 
     digitalWrite(UDStepPin, LOW);
     digitalWrite(LRStepPin, LOW);
     delay(speed); 
-    }
   }
   delay(4000); // delay for 4 seconds between loops
 }
