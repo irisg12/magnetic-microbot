@@ -41,6 +41,6 @@ The system uses a two-layer flex PCB with orthogonal serpentine traces powered b
 - Webcam & webcam stand
 
 ## Wiring Schematic
-Default pin connections for Arduino, motor drivers, and PCB. Drivers are full-stepping, which results in the smoothest motion.
+Default pin connections for Arduino, motor drivers, and PCB also available in SetupSchematic.svg. Drivers are full-stepping, which results in the smoothest motion.
 
 ![Schematic](SetupSchematic.svg)
