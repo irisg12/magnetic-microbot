@@ -35,3 +35,7 @@ The system uses a two-layer flex PCB with orthogonal serpentine traces powered b
 - 3/16" thick acrylic sheet: each base has approximate dimensions 4.2" x 5.9" 
 - M3 nuts and bolts for mounting 
 - Webcam & webcam stand
+
+## Wiring Schematic
+
+![Schematic](SetupSchematic.svg)
