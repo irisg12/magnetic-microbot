@@ -25,6 +25,10 @@ The system uses a two-layer flex PCB with orthogonal serpentine traces powered b
 - MATLAB Support Package for USB Webcams
 - MATLAB Image Processing Toolbox
 
+## File Organization
+
+- Upload microbot_multidirection_serial.ino to Arduino Uno
+
 ## Hardware Components 
 
 - Flex PCB with stiffener
@@ -37,5 +41,6 @@ The system uses a two-layer flex PCB with orthogonal serpentine traces powered b
 - Webcam & webcam stand
 
 ## Wiring Schematic
+Default pin connections for Arduino, motor drivers, and PCB. Drivers are full-stepping, which results in the smoothest motion.
 
 ![Schematic](SetupSchematic.svg)
