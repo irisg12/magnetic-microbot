@@ -1,22 +1,29 @@
 % 10/29/24 Version
-close all
+close all % close all existing figures
+
+%% Setup
 % Set parameters for the PCB field
-SF = 100;                % Scaling factor for viewability                   % changed
-YTRACES = 7;         % Number of horizontal traces on PCB
-XTRACES = 7;         % Number of vertical traces on PCB
+SF = 100;              % Scaling factor of original grid size (7x7 pixels) for viewability
+YTRACES = 7;           % Number of horizontal traces on PCB
+XTRACES = 7;           % Number of vertical traces on PCB
 WIDTH = XTRACES * SF;  % Width of the displayed field image
 HEIGHT = YTRACES * SF; % Height of the displayed field image
-MAGSIZE = .15 * SF;      % Magnet size (2.4 traces wide/tall)              % changed
+MAGSIZE = .15 * SF;    % Magnet size (.15 * width of a single 1x1 square)     
 RUN = true;            % Enables/disables visualization for debugging
-vid_bool = false;        % true for video, false for image
+vid_bool = false;      % true for video processing, false for image
+filepath = "TeamImage1.jpg"   % if vid_bool = false, opens the filepath image for processing
 kernel = strel('square', 4);  % 3x3 kernel for noise removal
+MS = 0.15              % frame rate (.15 ms between frames)
 
+% high and low thresholds to mask the PCB
 low_orange_thresh = [1/360, 10/255, 95/255];
 high_orange_thresh = [350/360, 75/255, 200/255];
 
+% high and low thresholds to mask the stiffener
 low_yellow_thresh = [36/360, 25/255, 85/255];
 high_yellow_thresh = [55/360, 150/255, 215/255];
 
+% high and low thresholds to mask the obstacles
 low_blue_thresh = [200/360, 80/255, 30/255];
 high_blue_thresh = [260/360, 255/255, 170/255];
 
@@ -35,11 +42,12 @@ if RUN
     set(gcf, 'Units', 'normalized', 'Position', [0.3, 0.2, 0.3, 0.7]); % sets screen location
 end
 while true
-    if ~vid_bool                                                            % image code
-        orig_image = imread("OliviaImage.png");
+    if ~vid_bool                                                            
+        orig_image = imread(filepath); % opens/stores the image at filepath for processing
     else
-        orig_image = snapshot(vid);
+        orig_image = snapshot(vid);    % opens a single frame for processing
     end
+
     % converts image color format to HSV, then creates three masks:
     % orange holds just the magnet
     % yellow holds the stiffener
@@ -57,8 +65,9 @@ while true
                     (imageHSV(:,:,2) >= low_blue_thresh(2) & imageHSV(:,:,2) <= high_blue_thresh(2)) & ...
                     (imageHSV(:,:,3) >= low_blue_thresh(3) & imageHSV(:,:,3) <= high_blue_thresh(3));
     
-    imopen(masked_yellow, strel('square', 6));
     % dilate and erode image to remove noise
+    imopen(masked_yellow, strel('square', 6));
+    % eliminate holes in yellow stiffener mask
     for i = 1:4
         masked_yellow = imdilate(masked_yellow, kernel);
     end
@@ -66,8 +75,9 @@ while true
         masked_yellow = imerode(masked_yellow, kernel);
     end
 
-    masked_field = ~masked_yellow;
+    masked_field = ~masked_yellow; % invert mask so PCB is highlighted
 
+    % Show all three masks for verification
     if RUN
         figure(2);
         subplot(3,1,1);
@@ -88,12 +98,13 @@ while true
 
     % converts the mask to binary and identifies the largest regions
     labeledImage = logical(masked_field);
-    props = regionprops(labeledImage, 'ConvexArea', 'ConvexHull');
-    allAreas = [props.ConvexArea];
+    props = regionprops(labeledImage, 'ConvexArea', 'ConvexHull'); % obtains all contours in the frame
+    allAreas = [props.ConvexArea]; % Area of the convex hull of each contour
+
     % sorts so the largest regions are first
     [~, sortedAreas] = sort(allAreas, 'descend');
     % if no regions are found, does not throw an error
-    if length(allAreas) < 1 && vid_bool
+    if length(allAreas) < 1 && vid_bool % if no contours are found, continue to next frame
         continue;
     end
 
@@ -108,7 +119,7 @@ while true
     correctField = images.roi.Polygon(gca,'Position',field);
     masked = createMask(correctField, orig_image);
     hold off;
-    pause(0.15); % frame rate
+    pause(MS); % frame rate
 
     % Press 'space' to save the current frame
     if (strcmp(get(gcf, 'CurrentKey'), 'space') || ~vid_bool)                 % image code
@@ -182,24 +193,24 @@ for row = 1:YTRACES
         % If >50% of the pixels in that grid section are black, 
         % the A* square will be categorized as an obstacle (-1)
         if blackPixels > 0.5 * SF * SF
-            map(row, col) = 0;  
+            map(row, col) = 0; % traversable grid square
         else
-            map(row, col) = 1; % Mark as obstacle
+            map(row, col) = 1; % Mark as obstacle; changed to -1 later
         end
     end
 end
-                                                                            % changed
-% # cleans up map noise and adds padding around each obstacle
+
+% cleans up map noise and adds padding around each obstacle
 % to prevent the magnet from touching them
 % NO EROSION NEEDED ON 7x7: will delete obstacles
 %map = imerode(map, kernel);
 %map = imdilate(map, kernel);
 %map = imdilate(map, kernel);
 
-magnet_x_idx = floor(magnet_x / SF)+1;
-magnet_y_idx = floor(magnet_y / SF)+1;
+magnet_x_idx = floor(magnet_x / SF)+1; % magnet x coordinate index
+magnet_y_idx = floor(magnet_y / SF)+1; % magnet y coordinate index
 
-% Add magnet location to the grid
+% Add magnet location to the grid if present as a white square (1)
 if (magnet_x > 0)
     map(magnet_y_idx, magnet_x_idx) = 1;
 end
@@ -207,17 +218,18 @@ end
 % Display the A* grid
 if RUN
     if (magnet_x > 0)
-        map(magnet_y_idx, magnet_x_idx) = .5;
+        map(magnet_y_idx, magnet_x_idx) = .5; % represents magnet location as a gray square
     end
     imshow(imresize(map, SF, 'nearest'));
     title('A* Grid');
 end
 
-map = map.*-1; % obstacles are -1
+map = map.*-1; % obstacles are changed from 1 to -1
 
 clear vid
 
-function rect = order_points(pts)
+% given four corner coordinates of a rectnagle, stores them correctly.
+function rect = order_points(pts) 
     % Initialize a 4x2 matrix to store the ordered points
     rect = zeros(4, 2);
 
