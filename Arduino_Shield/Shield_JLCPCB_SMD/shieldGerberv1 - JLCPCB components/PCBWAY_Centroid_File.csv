@@ -1,0 +1,16 @@
+Designator,Package,Mid X,Mid Y,TB,Rotation,Comment
+C1,C_0805_2012Metric,116.83,-78.156,T,0,.1uF
+C2,C_0805_2012Metric,142.23,-77.902,T,0,.1uF
+C3,CAP-SMD_BD6.3-L6.6-W6.6-LS7.2-R-RD,135.56,-80.452,T,90,100uF
+C4,CAP-SMD_BD6.3-L6.6-W6.6-LS7.2-R-RD,160.96,-80.452,T,90,100uF
+J1,PinSocket_1x08_P2.54mm_Vertical,127.94,-97.46,T,0,Power
+J2,PinSocket_1x10_P2.54mm_Vertical,118.796,-49.2,T,0,Digital/PWM
+J3,PinSocket_1x06_P2.54mm_Vertical,150.8,-97.46,T,0,Analog
+J4,PinSocket_1x08_P2.54mm_Vertical,145.72,-49.2,T,0,Digital/PWM
+J5,DC-IN-TH_DC-018,107.01,-72.208,T,180,Barrel_Jack_MountingPin
+LR1,PinSocket_1x08_P2.54mm_Vertical,133.02,-61.9,T,180,Conn_01x08
+LR2,PinSocket_1x08_P2.54mm_Vertical,115.24,-74.6,T,0,Conn_01x08
+UD1,PinSocket_1x08_P2.54mm_Vertical,158.42,-61.9,T,180,Conn_01x08
+UD2,PinSocket_1x08_P2.54mm_Vertical,140.64,-74.6,T,0,Conn_01x08
+X1,PinHeader_1x04_P2.54mm_Vertical,120.32,-83.236,T,0,Conn_01x04_Pin
+Y1,PinHeader_1x04_P2.54mm_Vertical,145.72,-83.236,T,0,Conn_01x04_Pin

@@ -1,0 +1,16 @@
+Designator,Mid X,Mid Y,Rotation,Layer,Val,Package
+C1,16.83,21.844,0,top,.1uF,C_0805_2012Metric
+C2,42.23,22.098,0,top,.1uF,C_0805_2012Metric
+C3,35.306,21.033,-90,top,100uF,C_1206_3216Metric
+C4,60.706,21.131,-90,top,100uF,C_1206_3216Metric
+J1,27.94,2.54,-90,top,Power,PinSocket_1x08_P2.54mm_Vertical
+J2,18.796,50.8,-90,top,Digital/PWM,PinSocket_1x10_P2.54mm_Vertical
+J3,50.8,2.54,-90,top,Analog,PinSocket_1x06_P2.54mm_Vertical
+J4,45.72,50.8,-90,top,Digital/PWM,PinSocket_1x08_P2.54mm_Vertical
+J5,10.318,20.066,0,top,Barrel_Jack_MountingPin,BarrelJack_Horizontal
+LR1,33.02,38.1,90,top,Conn_01x08,PinSocket_1x08_P2.54mm_Vertical
+LR2,15.24,25.4,-90,top,Conn_01x08,PinSocket_1x08_P2.54mm_Vertical
+UD1,58.42,38.1,90,top,Conn_01x08,PinSocket_1x08_P2.54mm_Vertical
+UD2,40.64,25.4,-90,top,Conn_01x08,PinSocket_1x08_P2.54mm_Vertical
+X1,20.32,16.764,-90,top,Conn_01x04_Pin,PinHeader_1x04_P2.54mm_Vertical
+Y1,45.72,16.764,-90,top,Conn_01x04_Pin,PinHeader_1x04_P2.54mm_Vertical
